@@ -1,0 +1,173 @@
+<style>
+body {
+  background-image: url('kubebg.jpg');
+  height: 90%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+</style>
+
+
+<h1>WELCOME TO KUBERNETES WEB PORTAL</h1>
+<h3>ENTER YOUR CMD: <input id="taking_cmd"/></h3>
+
+
+<button  type="button" class="block" style="background-color:orange;" onclick="go()"><b>MANUAL COMMAND</b></button>
+<button  style="background-color:Tomato;"onclick="list()"><b>LIST RESOURCES</b></button>
+<button  style="background-color:tomato;"onclick="all_stopped_containers()"><b>LAUNCH POD</b></button>
+<button  style="background-color:tomato;"onclick="run_a_container()"><b>RUN DEPLOY</b></button>
+<button  style="background-color:tomato;"onclick="remove_a_container()"><b>REMOVE A RESOURCE</b></button>
+<button  style="background-color:tomato;"onclick="expose()"><b>EXPOSE SERVICE</b></button>
+<button  style="background-color:tomato;"onclick="scale()"><b>SCALE DEPLOY</b></button><br><br>
+<button  style="background-color:red;"onclick="confirmm()"><b>DELETE COMPLETE ENVIRONMENT</b></button>
+
+
+
+<script>
+
+  function go(){
+  var command = document.getElementById("taking_cmd").value
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function list(){
+  var resource_name = prompt("ENTER NAME OF RESOURCE YOU WANT TO LIST , pod,deploy,svc,rc,etc")
+  var command = ["kubectl get " ,resource_name].join(" ");
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function all_containers(){
+  var command = "docker ps";
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function scale(){
+	    
+  var deploy_name = prompt("ENTER NAME OF DEPLOY")
+  var count = prompt("ENTER THE COUNT OF REPLICAS YOU WANT")  
+
+  var command = ["kubectl scale deploy " ,deploy_name, "--replicas " ,count].join(" ");
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+  var output = xml.responseText;
+  document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function all_stopped_containers(){
+  
+  var pod_name = prompt("ENTER NAME OF POD")
+  var image_name = prompt("ENTER NAME OF IMAGE")  
+
+  var command = ["kubectl run " ,pod_name, "--image " ,image_name].join(" ");
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function run_a_container(){
+
+  var name_given_by_user = prompt("Provide name for container");
+  var image_name = prompt("Provide image name to use for container");
+  alert (name_given_by_user);
+  alert (image_name);
+
+  var command = ["kubectl create deploy " ,name_given_by_user , " --image ",image_name].join(" ");
+  alert (command);
+
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+
+  function remove_a_container(){
+  var resource_type  = prompt("ENTER RESOURCE TYPE")
+  var resource_name = prompt("ENTER NAME OF YOUR RESOURCE")
+  var command = ["kubectl delete " ,resource_type ,resource_name].join(" ");
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+  }
+}
+  function expose(){
+  var pod_name = prompt("ENTER NAME OF POD")
+  var port_number = prompt("ENTER PORT NUMBER")
+  var expose_type = prompt("ENTER TYPE FOR EXPOSE")
+  var command = ["kubectl expose pod ", pod_name, "--port " ,port_number, "--type " ,expose_type].join(" ");
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+ }
+}
+
+  function confirmm(){
+  let confirmaction=confirm("ARE U SURE THIS ACTION WILL COMPLETELY DELETE ALL RESOURCES IN THIS CLUSTER");
+    if (confirmaction) {
+      khatam();
+    }else {
+      alert("ABORTING THE ACTION");
+    }
+}
+
+  function khatam(){
+
+  var command = "kubectl delete all --all"
+  var xml = new XMLHttpRequest();
+  xml.open( "GET" , "http://35.154.15.210/cgi-bin/jsws.py?cmd=" + command , true );
+  xml.send();
+  // output storage 
+  xml.onload = function() {
+    var output = xml.responseText;
+    document.getElementById("123").innerHTML = output;
+ }
+}
+
+
+</script>
+
+<pre>
+<h2><div id="123">: OUTPUT :</div></h2>
+</pre>
